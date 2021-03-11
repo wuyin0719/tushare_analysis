@@ -222,7 +222,7 @@ if __name__ == '__main__':
     # param["uppercent"] = 32
 
     # print(param.keys())
-    folder = r'C:\Users\吴隐\Desktop\Python\StockAnaysis\ImageSky\tushare量化分析流程\1数据下载\K线'
+    folder = r'K线Selected'
     # from Enumerate_All import evaluate
 
     # evaluate(folder, meam_Screem, param)
