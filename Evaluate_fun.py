@@ -87,12 +87,9 @@ def evaluate(folder,fun,param,num=100):
         mean_keep=np.mean(evaluate,axis=0)
         temp=list(v)+mean_keep.tolist()
         res_df.append(temp)
-        # temp_slice=(i for i in temp)
-        # print(temp_slice)
         print(v,"mean Success:%.4f,gains_rate:%.4f,loss_rate%.4f,hold_rate%.4f"%(temp[-4],temp[-3],temp[-2],temp[-1],))
     res_df = pd.DataFrame(res_df, columns=keys)
     res_df.to_csv("res.csv", encoding='utf_8_sig')
-
 def meam_Screem():
     pass
 if __name__ == '__main__':
