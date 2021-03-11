@@ -99,7 +99,6 @@ if __name__ == '__main__':
     kplot_name = r'C:\Users\吴隐\Desktop\Python\StockAnaysis\ImageSky\tushare量化分析流程\1数据下载\K线'
     param = OrderedDict()
     print("Be happy,don't worry,not so xxx convenient!!")
-    print("Be happy,don't worry,not so xxx convenient!!")
     param["mean_Window1"] = 5
     param["mean_Window2"] = 60
     param["keep_Time"] = [60, 120, 10]
