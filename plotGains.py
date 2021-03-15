@@ -22,7 +22,7 @@ def increase_decrease(stockline,M1,time_buy_p,price_buy_p, time_sell_p,price_sel
     else:
         color='g'
     for i in range(len(time_buy_p2)):
-        index = numpy.where((time_buy_p2[i] < stockline) & (stockline <= time_sell_p2[i]))
+        index = numpy.where((time_buy_p2[i] <= stockline) & (stockline <= time_sell_p2[i]))
         x = stockline[index]
         y = M1[index]
         min_y = min(M1)
@@ -44,18 +44,22 @@ def increase_decrease(stockline,M1,time_buy_p,price_buy_p, time_sell_p,price_sel
         m = x.min()
         plt.text((m + (x - m).mean()), min_y, gains, horizontalalignment='center',verticalalignment = 'center')
 
-def hold_analysis(flag_buy,kplot_data,windows,keep_Time=5,ifshow=False,name=''):
+def hold_analysis(flag_buy,kplot_data,keep_Time=5,ifshow=False,name=''):
     # 无差别卖出，只有时间限制
     stockline = [datetime.datetime.strptime(str(d), '%Y%m%d').date() for d in kplot_data['trade_date']]
     stockline = numpy.array(stockline)
-    for w in windows:
-        kplot_data['Ma%s'%w] = kplot_data['close'].rolling(window=w).mean()
+    # for w in windows:
+    #     kplot_data['Ma%s'%w] = kplot_data['close'].rolling(window=w).mean()
     # kplot_data['Ma2'] = kplot_data['close'].rolling(window=delta).mean()
 
-    M1 = kplot_data['Ma%s'%windows[0]].values[windows[-1] - 1:]
-    stockline=stockline[windows[-1] - 1:]
+    M1 = kplot_data['close'].values
+    low = kplot_data['low'].values
+    high = kplot_data['high'].values
+
+    # stockline=stockline
 
     flag_buy=numpy.array(flag_buy)
+    # print(flag_buy)
     flag_sell=[]
     for p in flag_buy:
         time_buy_p = stockline[p]
@@ -83,10 +87,13 @@ def hold_analysis(flag_buy,kplot_data,windows,keep_Time=5,ifshow=False,name=''):
         plt.rcParams['axes.unicode_minus'] = False
         increase_decrease(stockline, M1, time_buy_p, price_buy_p, time_sell_p, price_sell_p, tag='increase')
         increase_decrease(stockline, M1, time_buy_p, price_buy_p, time_sell_p, price_sell_p, tag='decrease')
-        plt.plot(stockline,M1,label='M%s'%windows[0])
-        for i in windows[1:]:
-            M = kplot_data['Ma%s' % i].values[windows[-1] - 1:]
-            plt.plot(stockline, M, label='M%s' % i)
+        plt.plot(stockline,M1,label='Close')
+        plt.plot(stockline,low,label='low',c='black')
+        plt.plot(stockline,high,label='high',c='red')
+
+        # for i in windows[1:]:
+        #     M = kplot_data['Ma%s' % i].values[windows[-1] - 1:]
+        #     plt.plot(stockline, M, label='M%s' % i)
         plt.title(name+" keepTime:%s d"%keep_Time)
         plt.legend()
         plt.show()

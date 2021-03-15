@@ -60,12 +60,54 @@ def linespace(para):
         return [para]
 
 def trade_rate(close,flag_buy,keep_Time):
-    price_buy_p, price_sell_p=close[flag_buy + 1], close[flag_buy + 1 + keep_Time]
+    price_buy_p, price_sell_p=close[flag_buy ], close[flag_buy  + keep_Time]
     success_rate = sum((price_sell_p - price_buy_p) > 0) / len(price_buy_p)
     gains_rate = profits_rate(price_sell_p, price_buy_p, flag=">")
     loss_rate = profits_rate(price_sell_p, price_buy_p, flag="<")
     hold_rate = kelly(success_rate, 1 - success_rate, 1 + gains_rate, 1 + loss_rate)
+    #
+    # gains = []
+    # stock_Status = stock()
+    # # print(close)
+    # stock_Status.add_share(1, close[0])
+    # for f in flag_buy:
+    #     stock_Status.add_share(0, close[f])
+    #     stock_Status.add_share(1, close[f + keep_Time])
+    #     gains.append(stock_Status.sum(close[f + keep_Time]))
+
     return success_rate, gains_rate, loss_rate ,hold_rate
+
+class stock:
+    def __init__(self):
+        self.share=0
+        self.price=0
+        self.profit=1
+        self.times=0
+        self.percent=0
+    def add_share(self,percent,price):
+        #持股比例，价格
+        if abs(percent-self.percent)>0.2:
+            self.percent=percent
+            self.times =self.times+1
+            if percent>0:
+                if self.share==0:
+                    self.share=(percent*self.profit)/price
+                    self.price=price
+
+                    self.profit=self.profit-self.share*self.price
+                else:
+                    temp_money=self.profit+self.share*price
+                    self.share =(percent*temp_money)/price
+                    self.price=price
+                    self.profit=(1-percent)*temp_money
+            else:
+                self.profit = self.profit + self.share * price
+                self.share = 0
+                self.price = 0
+
+    def sum(self,price):
+        return self.profit + self.share * price-self.times*0.0005
+
 
 
 def evaluate(folder,fun,param,num=100):
@@ -85,21 +127,11 @@ def evaluate(folder,fun,param,num=100):
             except:
                 continue
         mean_keep=np.mean(evaluate,axis=0)
+        # print(list(v),mean_keep.tolist())
         temp=list(v)+mean_keep.tolist()
         res_df.append(temp)
+        # temp_slice=(i for i in temp)
+        # print(temp_slice)
         print(v,"mean Success:%.4f,gains_rate:%.4f,loss_rate%.4f,hold_rate%.4f"%(temp[-4],temp[-3],temp[-2],temp[-1],))
     res_df = pd.DataFrame(res_df, columns=keys)
     res_df.to_csv("res.csv", encoding='utf_8_sig')
-def meam_Screem():
-    pass
-if __name__ == '__main__':
-    import glob
-    from collections import OrderedDict
-
-    kplot_name = r'C:\Users\吴隐\Desktop\Python\StockAnaysis\ImageSky\tushare量化分析流程\1数据下载\K线'
-    param = OrderedDict()
-    print("Be happy,don't worry,not so xxx convenient!!")
-    param["mean_Window1"] = 5
-    param["mean_Window2"] = 60
-    param["keep_Time"] = [60, 120, 10]
-    evaluate(kplot_name, meam_Screem, param)
