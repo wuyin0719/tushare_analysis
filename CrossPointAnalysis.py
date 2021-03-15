@@ -49,6 +49,7 @@ def meam_Screem(kplot_name,devariation=0.1,bb_threshod=1,window=10,keep_Time=5,m
     M1 = kplot_data['Ma1']
     M2 = kplot_data['Ma2']
     MM = kplot_data['close']
+    pct_chg = kplot_data['pct_chg'].values[delta - 1:]
 
     M1 = M1.values[delta - 1:]
     M2 = M2.values[delta - 1:]
@@ -93,17 +94,22 @@ def meam_Screem(kplot_name,devariation=0.1,bb_threshod=1,window=10,keep_Time=5,m
             j = to_i
         windows = 5
         dt=5
-        while j < to_i2:
-            # for j in range(to_i,to_i2,1):
-            dp = ((MM[j] - MM[j - dt]) / dt)
-            con2 = abs((M1[j] - M2[j]) / M2[j])
-            con3 =((j-to_i)>30)
-            # if M1[j]<min(M1[from_i2:to_i]):
-            if (dp >0)and (con2<0.05)and con3 :
-                flag_buy.append(j)
-                j = j + windows
-            else:
-                j = j + 1
+        j=j+1
+        # dp =abs((MM[j] - M1[j - dt]) / M1[j - dt])<0.02
+        # con=(to_i-from_i)>120
+        if (M1[j] - M2[j])<0 and pct_chg[j-2]>2:
+            flag_buy.append(j-2)
+        # while j < to_i2:
+        #     # for j in range(to_i,to_i2,1):
+        #     dp = ((MM[j] - MM[j - dt]) / dt)
+        #     con2 = abs((M1[j] - M2[j]) / M2[j])
+        #     con3 =((j-to_i)>30)
+        #     # if M1[j]<min(M1[from_i2:to_i]):
+        #     if (dp >0)and (con2<0.05)and con3 :
+        #         flag_buy.append(j)
+        #         j = j + windows
+        #     else:
+        #         j = j + 1
 
     # max_lower_i=np.array(max_lower_i)
     # flag_buy=[]
